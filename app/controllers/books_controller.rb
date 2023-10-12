@@ -27,19 +27,19 @@ class BooksController < ApplicationController
 
   def search_book
     @book = if params[:query].present?
-      Book.search(params[:query]).paginate(page: params[:page], per_page: Settings.per_page_search)
-    elsif params[:check] == "1" && params[:query].present? == false
-      category = Category.find(params[:category_id])
-      @book = category.books.paginate(page: params[:page], per_page: Settings.per_page_search)
-    else
-      @book = Book.paginate(page: params[:page], per_page: Settings.per_page)
-    end
-  
+              Book.search(params[:query]).paginate page: params[:page],
+                per_page: Settings.per_page_search
+            elsif params[:check] == "1" && params[:query].present? == false
+              Category.find(params[:category_id]).books.paginate page: params[:page],
+                per_page: Settings.per_page_search
+            else
+              Book.all.paginate page: params[:page],
+                per_page: Settings.per_page
+            end
     return if @book
     flash[:danger] = t("not_found")
     redirect_to root_path
   end
-  
 
   def book_params
     params.require(:book).permit :category_id, :name, :author, :quantity,
